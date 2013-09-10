@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = MediaPlayer::VERSION
   spec.authors       = ["oozzal"]
   spec.email         = ["theoozzal@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{Command line media player.}
+  spec.summary       = %q{Plays media files right from the command line giving some basic media controls.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
