@@ -16,18 +16,29 @@ describe 'An Instance of ProcessManager', MediaPlayer::ProcessManager do
     end
   end
 
-  context '#pause' do
+  context 'when manipulating current process' do
     before { subject.current_process_id = sample_pid }
-    it 'pauses the given media' do
-      Process.should_receive(:kill).with(:STOP, sample_pid)
-      subject.pause
+    context '#pause' do
+      it 'pauses the given media' do
+        Process.should_receive(:kill).with(:STOP, sample_pid)
+        subject.pause
+      end
     end
-  end
 
-  context '#resume' do
-  end
+    context '#resume' do
+      it 'resumes the paused media' do
+        Process.should_receive(:kill).with(:CONT, sample_pid)
+        subject.resume
+      end
+    end
 
-  context '#next' do
+    context '#stop' do
+      it 'stops the current media' do
+        Process.should_receive(:kill).with(:INT, sample_pid)
+        Process.should_receive(:waitpid).with(sample_pid)
+        subject.stop
+      end
+    end
   end
 
 end

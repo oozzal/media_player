@@ -5,8 +5,6 @@ describe 'An Instance of Playlist', MediaPlayer::PlayList do
   context 'when initialized' do
     it { subject.media.should_not be_nil }
     it { subject.media.should_not be_empty }
-    it { subject.played_media.should_not be_nil }
-    it { subject.played_media.should be_empty }
     it { subject.current_index.should_not be_nil }
   end
 

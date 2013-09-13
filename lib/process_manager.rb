@@ -15,5 +15,14 @@ module MediaPlayer
       Process.kill(:STOP, @current_process_id)
     end
 
+    def resume
+      Process.kill(:CONT, @current_process_id)
+    end
+
+    def stop
+      Process.kill(:INT, @current_process_id)
+      Process.waitpid(@current_process_id)
+    end
+
   end
 end

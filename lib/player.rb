@@ -1,4 +1,4 @@
-require 'media_player/version'
+require_relative './media_player/version'
 require_relative './process_manager'
 require_relative './playlist'
 require 'forwardable'
@@ -6,7 +6,7 @@ require 'forwardable'
 module MediaPlayer
   class Player
     extend Forwardable
-    attr_reader :process_manager, :playlist, :is_active
+    attr_reader :process_manager, :playlist
     attr_accessor :repeat, :is_active
     def_delegators :@playlist, :current_media, :next_media, :previous_media, :shuffle
 
@@ -39,17 +39,13 @@ module MediaPlayer
     end
 
     def next
+      @process_manager.stop
       @process_manager.execute(next_media)
     end
 
     def previous
+      @process_manager.stop
       @process_manager.execute(previous_media)
     end
-
-    def shuffle=(value)
-      @shuffle = value
-      @playlist.shuffle if value
-    end
-
   end
 end

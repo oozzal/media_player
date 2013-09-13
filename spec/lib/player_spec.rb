@@ -3,6 +3,7 @@ require_relative '../spec_helper'
 describe 'An Instance of Player', MediaPlayer::Player do
   let(:sample_media) { 'imagine.mp3' }
   subject { MediaPlayer::Player.new }
+
   it { subject.is_active.should eql nil }
   it { subject.process_manager.should_not be_nil }
   it { subject.repeat.should eql false }
@@ -15,7 +16,6 @@ describe 'An Instance of Player', MediaPlayer::Player do
 
   context 'when adding media' do
     it 'pushes media to the playlist' do
-      binding.pry
       subject.playlist.should_receive(:add).with(sample_media)
       subject.add_media(sample_media)
     end
@@ -98,6 +98,7 @@ describe 'An Instance of Player', MediaPlayer::Player do
         context '#next' do
           it 'plays the next media from the playlist' do
             player.playlist.stub(:next_media).and_return(sample_media)
+            player.process_manager.should_receive(:stop).with(no_args())
             player.process_manager.should_receive(:execute).with(sample_media)
             player.next
           end
@@ -106,6 +107,7 @@ describe 'An Instance of Player', MediaPlayer::Player do
         context '#previous' do
           it 'plays the previous media in the playlist' do
             player.playlist.stub(:previous_media).and_return(sample_media)
+            player.process_manager.should_receive(:stop).with(no_args())
             player.process_manager.should_receive(:execute).with(sample_media)
             player.previous
           end

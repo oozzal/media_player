@@ -1,6 +1,6 @@
 module MediaPlayer
   class PlayList
-    attr_reader :media, :played_media
+    attr_reader :media
     attr_accessor :current_index
 
     def initialize(media)
@@ -30,9 +30,9 @@ module MediaPlayer
     end
 
     def shuffle
-      previous_current_media = current_media
+      old_current_media = current_media
       @media.shuffle!
-      @current_index = @media.index(previous_current_media)
+      @current_index = @media.index(old_current_media)
     end
   end
 end
