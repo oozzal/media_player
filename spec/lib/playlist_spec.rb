@@ -16,55 +16,39 @@ describe 'An Instance of Playlist', MediaPlayer::PlayList do
     it { expect(subject.media.include?(sample_media)).to eql true }
   end
 
+  context '#shuffle' do
+    it 'readjusts the current_index to the current_media' do
+      current_media = subject.current_media
+      subject.shuffle
+      subject.current_media.should eql current_media
+    end
+    it {
+      subject.media.should_receive(:shuffle!).with(no_args())
+      subject.shuffle
+    }
+  end
+
   context '#current_media' do
     it { subject.current_media.should eql 'a.mp3' }
   end
 
   context '#next_media' do
-    context 'when next media is returned' do
-      let(:shuffle) { false }
-      let(:played_media) { subject.next_media(shuffle) }
-      it 'updates the media arrays' do
-        subject.should_receive(:update_media)
-        subject.next_media(shuffle)
-      end
-      it { expect(subject.media.include?(played_media)).to eql false }
-      it { expect(subject.played_media.include?(played_media)).to eql true }
+    it { subject.next_media.should eql 'b.wav' }
+
+    context 'when end of playlist is reached' do
+      before { subject.current_index = subject.media.size - 1 }
+      # TODO: shuffle automatically on next loop?
+      it { subject.next_media.should eql 'a.mp3' }
     end
+  end
 
-    context 'when shuffle is off' do
-      let(:shuffle) { false }
-      it { subject.next_media(shuffle).should eql 'b.wav' }
-      context 'when end of playlist is reached' do
-        before { subject.current_index = subject.media.size - 1 }
-        it { subject.next_media(shuffle).should eql 'a.mp3' }
-      end
-    end
+  context '#previous_media' do
+    before { subject.current_index = 1 }
+    it { subject.previous_media.should eql 'a.mp3' }
 
-    context 'when shuffle is on' do
-      let(:shuffle) { true }
-      let(:all_media) { subject.media + subject.played_media }
-      context 'when some media are already played' do
-        before do
-          @played_media1 = subject.next_media(shuffle)
-          @played_media2 = subject.next_media(shuffle)
-        end
-        it 'does not re-return them until all media are returned once' do
-          subject.next_media(shuffle).should_not eql @played_media1
-          subject.next_media(shuffle).should_not eql @played_media2
-        end
-      end
-
-      context 'when all media are played' do
-        before do
-         subject.played_media = subject.media.dup
-         subject.media = []
-        end
-        it 're-creates the media array from played_media array' do
-          subject.next_media(shuffle)
-          subject.media.should_not be_empty
-        end
-      end
+    context 'when beginning of playlist is reached' do
+      before { subject.current_index = 0 }
+      it { subject.previous_media.should eql 'd.wav' }
     end
   end
 end

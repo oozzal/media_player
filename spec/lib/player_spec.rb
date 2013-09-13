@@ -5,7 +5,6 @@ describe 'An Instance of Player', MediaPlayer::Player do
   subject { MediaPlayer::Player.new }
   it { subject.is_active.should eql nil }
   it { subject.process_manager.should_not be_nil }
-  it { subject.shuffle.should eql false }
   it { subject.repeat.should eql false }
 
   context 'when initialized without any media' do
@@ -16,6 +15,7 @@ describe 'An Instance of Player', MediaPlayer::Player do
 
   context 'when adding media' do
     it 'pushes media to the playlist' do
+      binding.pry
       subject.playlist.should_receive(:add).with(sample_media)
       subject.add_media(sample_media)
     end
@@ -26,40 +26,34 @@ describe 'An Instance of Player', MediaPlayer::Player do
     it { player.playlist.should_not be_nil }
 
     it '#current_media' do
-      player.playlist.should_receive(:current_media)
+      player.playlist.should_receive(:current_media).with(no_args())
       player.current_media
     end
 
     it '#next_media' do
-      player.playlist.should_receive(:next_media).with(player.shuffle)
+      player.playlist.should_receive(:next_media).with(no_args())
       player.next_media
     end
 
     it '#previous_media' do
-      player.playlist.should_receive(:previous_media).with(player.shuffle)
+      player.playlist.should_receive(:previous_media).with(no_args())
       player.previous_media
     end
 
-    context 'when toggling shuffle' do
-      before(:each) { player.toggle_shuffle }
-      context 'when shuffle is false' do
-        it { player.shuffle.should eql true }
-      end
-      context 'when shuffle is true' do
-        before { player.toggle_shuffle }
-        it { player.shuffle.should eql false }
-      end
+    it '#shuffle' do
+      player.playlist.should_receive(:shuffle).with(no_args())
+      player.shuffle
     end
 
-    context 'when toggling repeat' do
-      before(:each) { player.toggle_repeat }
-      context 'when repeat is false' do
-        it { player.repeat.should eql true }
-      end
-      context 'when repeat is true' do
-        before { player.toggle_repeat }
-        it { player.repeat.should eql false }
-      end
+    context 'when setting repeat' do
+      it {
+        player.repeat = true
+        player.repeat.should eql true
+      }
+      it {
+        player.repeat = false
+        player.repeat.should eql false
+      }
     end
 
     context 'when manipulating media' do
@@ -77,7 +71,7 @@ describe 'An Instance of Player', MediaPlayer::Player do
           context 'when player is active' do
             before { player.is_active = true }
             it 'resumes the paused media' do
-              player.process_manager.should_receive(:resume)
+              player.process_manager.should_receive(:resume).with(no_args())
               player.play
             end
           end
@@ -85,7 +79,7 @@ describe 'An Instance of Player', MediaPlayer::Player do
 
         context 'when stopping media' do
           it 'stops the current media' do
-            player.process_manager.should_receive(:stop)
+            player.process_manager.should_receive(:stop).with(no_args())
             player.stop
             player.is_active.should eql false
           end
@@ -93,7 +87,7 @@ describe 'An Instance of Player', MediaPlayer::Player do
 
         context 'when pausing media' do
           it 'pauses the currently playing media from the playlist' do
-            player.process_manager.should_receive(:pause)
+            player.process_manager.should_receive(:pause).with(no_args())
             player.pause
           end
         end

@@ -1,31 +1,23 @@
 require 'media_player/version'
 require_relative './process_manager'
 require_relative './playlist'
+require 'forwardable'
 
 module MediaPlayer
   class Player
-    attr_accessor :process_manager, :playlist, :shuffle, :repeat, :is_active
+    extend Forwardable
+    attr_reader :process_manager, :playlist, :is_active
+    attr_accessor :repeat, :is_active
+    def_delegators :@playlist, :current_media, :next_media, :previous_media, :shuffle
+
     def initialize(media = [])
       @process_manager = MediaPlayer::ProcessManager.new
-      @shuffle = false
       @repeat = false
       @playlist = MediaPlayer::PlayList.new(media)
     end
 
     def add_media(media_file)
       @playlist.add(media_file)
-    end
-
-    def current_media
-      @playlist.current_media rescue nil
-    end
-
-    def next_media
-      @playlist.next_media(@shuffle) rescue nil
-    end
-
-    def previous_media
-      @playlist.previous_media(@shuffle) rescue nil
     end
 
     def play
@@ -54,12 +46,10 @@ module MediaPlayer
       @process_manager.execute(previous_media)
     end
 
-    def toggle_shuffle
-      @shuffle = @shuffle ? false : true
+    def shuffle=(value)
+      @shuffle = value
+      @playlist.shuffle if value
     end
 
-    def toggle_repeat
-      @repeat = @repeat ? false : true
-    end
   end
 end
