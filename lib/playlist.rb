@@ -9,7 +9,18 @@ module MediaPlayer
       @current_index = 0
     end
 
-    def add(media_file)
+    def filter_input(raw_input)
+      # weird :-O
+      raw_input = raw_input.gsub("'", "\\\\'")
+      raw_input = raw_input.gsub('"', '\"')
+      regex = /[()\s]/
+      raw_input.gsub regex do |match|
+        match.gsub("#{match}", "\\#{match}")
+      end
+    end
+
+    def add(raw_media_file)
+      media_file = filter_input(raw_media_file)
       @media.push(media_file)
     end
 
