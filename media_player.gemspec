@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["theoozzal@gmail.com"]
   spec.description   = %q{Command line media player.}
   spec.summary       = %q{Plays media files right from the command line giving some basic media controls.}
-  spec.homepage      = ""
+  spec.homepage      = "http://github.com/oozzal"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
