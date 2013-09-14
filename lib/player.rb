@@ -1,6 +1,6 @@
 require_relative './media_player/version'
-require_relative './process_manager'
 require_relative './playlist'
+require_relative './process_manager'
 require 'forwardable'
 
 module MediaPlayer
@@ -22,30 +22,32 @@ module MediaPlayer
 
     def play
       if @is_active
-        @process_manager.resume
+        [current_media, @process_manager.resume]
       else
         @is_active = true
-        @process_manager.execute(current_media)
+        [current_media, @process_manager.execute(current_media)]
       end
     end
 
     def stop
       @is_active = false
-      @process_manager.stop
+      [current_media, @process_manager.stop]
     end
 
     def pause
-      @process_manager.pause
+      [current_media, @process_manager.pause]
     end
 
     def next
       @process_manager.stop
-      @process_manager.execute(next_media)
+      media = next_media
+      [media, @process_manager.execute(media)]
     end
 
     def previous
       @process_manager.stop
-      @process_manager.execute(previous_media)
+      media = previous_media
+      [media, @process_manager.execute(media)]
     end
   end
 end

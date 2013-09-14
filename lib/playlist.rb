@@ -12,6 +12,7 @@ module MediaPlayer
       # weird :-O
       raw_input = raw_input.gsub("'", "\\\\'")
       raw_input = raw_input.gsub('"', '\"')
+      raw_input = raw_input.gsub('&', '\\\&')
       regex = /[()\s]/
       raw_input.gsub regex do |match|
         match.gsub("#{match}", "\\#{match}")

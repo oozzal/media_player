@@ -17,6 +17,7 @@ describe 'An Instance of Playlist', MediaPlayer::PlayList do
       let(:malicious_media) { '(02) - John Mayer Assassin.mp3' }
       let(:malicious_media2) { "Free' Falling.mp3" }
       let(:malicious_media3) { 'Free" Falling.mp3' }
+      let(:malicious_media4) { 'Pink & Nate Reus.mp3' }
       it 'escapes them' do
         subject.add(malicious_media)
         subject.media.last.should eql '\(02\)\ -\ John\ Mayer\ Assassin.mp3'
@@ -24,6 +25,8 @@ describe 'An Instance of Playlist', MediaPlayer::PlayList do
         subject.media.last.should eql "Free\\'\\ Falling.mp3"
         subject.add(malicious_media3)
         subject.media.last.should eql 'Free\"\\ Falling.mp3'
+        subject.add(malicious_media4)
+        subject.media.last.should eql 'Pink\ \&\ Nate\ Reus.mp3'
       end
     end
   end

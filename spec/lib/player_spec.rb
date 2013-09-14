@@ -63,7 +63,8 @@ describe 'An Instance of Player', MediaPlayer::Player do
           context 'when player is not active' do
             it 'plays the media in the playlist' do
               player.process_manager.should_receive(:execute).with(sample_media)
-              player.play
+              return_value = player.play
+              expect(return_value.include? sample_media).to be_true
               player.is_active.should eql true
             end
           end
@@ -72,7 +73,8 @@ describe 'An Instance of Player', MediaPlayer::Player do
             before { player.instance_variable_set('@is_active', true) }
             it 'resumes the paused media' do
               player.process_manager.should_receive(:resume).with(no_args())
-              player.play
+              return_value = player.play
+              expect(return_value.include? sample_media).to be_true
             end
           end
         end
@@ -80,7 +82,8 @@ describe 'An Instance of Player', MediaPlayer::Player do
         context 'when stopping media' do
           it 'stops the current media' do
             player.process_manager.should_receive(:stop).with(no_args())
-            player.stop
+            return_value = player.stop
+            expect(return_value.include? sample_media).to be_true
             player.is_active.should eql false
           end
         end
@@ -88,7 +91,8 @@ describe 'An Instance of Player', MediaPlayer::Player do
         context 'when pausing media' do
           it 'pauses the currently playing media from the playlist' do
             player.process_manager.should_receive(:pause).with(no_args())
-            player.pause
+            return_value = player.pause
+            expect(return_value.include? sample_media).to be_true
           end
         end
 
@@ -100,7 +104,8 @@ describe 'An Instance of Player', MediaPlayer::Player do
             player.playlist.stub(:next_media).and_return(sample_media)
             player.process_manager.should_receive(:stop).with(no_args())
             player.process_manager.should_receive(:execute).with(sample_media)
-            player.next
+            return_value = player.next
+            expect(return_value.include? sample_media).to be_true
           end
         end
 
@@ -109,7 +114,8 @@ describe 'An Instance of Player', MediaPlayer::Player do
             player.playlist.stub(:previous_media).and_return(sample_media)
             player.process_manager.should_receive(:stop).with(no_args())
             player.process_manager.should_receive(:execute).with(sample_media)
-            player.previous
+            return_value = player.previous
+            expect(return_value.include? sample_media).to be_true
           end
         end
       end
