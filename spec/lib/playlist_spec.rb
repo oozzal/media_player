@@ -48,18 +48,18 @@ describe 'An Instance of Playlist', MediaPlayer::PlayList do
     it { subject.next_media.should eql 'b.wav' }
 
     context 'when end of playlist is reached' do
-      before { subject.current_index = subject.media.size - 1 }
+      before { subject.instance_variable_set('@current_index', subject.media.size - 1) }
       # TODO: shuffle automatically on next loop?
       it { subject.next_media.should eql 'a.mp3' }
     end
   end
 
   context '#previous_media' do
-    before { subject.current_index = 1 }
+    before { subject.instance_variable_set('@current_index', 1) }
     it { subject.previous_media.should eql 'a.mp3' }
 
     context 'when beginning of playlist is reached' do
-      before { subject.current_index = 0 }
+      before { subject.instance_variable_set('@current_index', 0) }
       it { subject.previous_media.should eql 'd.wav' }
     end
   end

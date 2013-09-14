@@ -1,7 +1,6 @@
 module MediaPlayer
   class PlayList
-    attr_reader :media
-    attr_accessor :current_index
+    attr_reader :media, :current_index
 
     def initialize(media)
       @media = media

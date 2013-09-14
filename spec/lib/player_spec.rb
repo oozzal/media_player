@@ -69,7 +69,7 @@ describe 'An Instance of Player', MediaPlayer::Player do
           end
 
           context 'when player is active' do
-            before { player.is_active = true }
+            before { player.instance_variable_set('@is_active', true) }
             it 'resumes the paused media' do
               player.process_manager.should_receive(:resume).with(no_args())
               player.play

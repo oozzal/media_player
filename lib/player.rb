@@ -6,8 +6,8 @@ require 'forwardable'
 module MediaPlayer
   class Player
     extend Forwardable
-    attr_reader :process_manager, :playlist
-    attr_accessor :repeat, :is_active
+    attr_reader :process_manager, :playlist, :is_active
+    attr_accessor :repeat
     def_delegators :@playlist, :current_media, :next_media, :previous_media, :shuffle
 
     def initialize(media = [])
