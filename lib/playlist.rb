@@ -4,7 +4,6 @@ module MediaPlayer
 
     def initialize(media)
       @media = media
-      @played_media = []
       @current_index = 0
     end
 

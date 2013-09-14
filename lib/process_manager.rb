@@ -20,8 +20,11 @@ module MediaPlayer
     end
 
     def stop
-      Process.kill(:INT, @current_process_id)
-      Process.waitpid(@current_process_id)
+      begin
+        Process.kill(:INT, @current_process_id)
+        Process.waitpid(@current_process_id)
+      rescue
+      end
     end
 
   end
