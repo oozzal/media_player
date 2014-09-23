@@ -27,5 +27,16 @@ module MediaPlayer
       end
     end
 
+    def is_current_process_alive?
+      begin
+        Process.getpgid(@current_process_id)
+        true
+      rescue Errno::ESRCH
+        false
+      rescue
+        false
+      end
+    end
   end
 end
+

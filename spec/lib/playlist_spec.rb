@@ -38,7 +38,7 @@ describe 'An Instance of Playlist', MediaPlayer::PlayList do
       subject.current_media.should eql current_media
     end
     it {
-      subject.media.should_receive(:shuffle!).with(no_args())
+      expect(subject.media).to receive(:shuffle!).with no_args
       subject.shuffle
     }
   end

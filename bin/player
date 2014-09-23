@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/process_manager'
+require_relative '../lib/playlist'
+require_relative '../lib/player'
+require_relative '../lib/input_manager'
+
+pm = MediaPlayer::ProcessManager.new
+pl = MediaPlayer::PlayList.new
+p = MediaPlayer::Player.new(process_manager: pm, playlist: pl)
+
+MediaPlayer::InputManager.new(player: p).start
+

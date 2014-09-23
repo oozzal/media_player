@@ -2,7 +2,7 @@ module MediaPlayer
   class PlayList
     attr_reader :media, :current_index
 
-    def initialize(media)
+    def initialize(media = [])
       @media = media
       @current_index = 0
     end

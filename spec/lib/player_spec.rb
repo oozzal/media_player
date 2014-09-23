@@ -2,124 +2,103 @@ require_relative '../spec_helper'
 
 describe 'An Instance of Player', MediaPlayer::Player do
   let(:sample_media) { 'imagine.mp3' }
-  subject { MediaPlayer::Player.new }
+  let(:media) { [] }
+  let(:process_manager) { double('process_manager') }
+  let(:playlist) {
+    double(
+      'playlist',
+      media: media,
+      current_media: nil, next_media: nil,
+      previous_media: nil, shuffle: nil
+    )
+  }
 
-  it { subject.is_active.should eql nil }
-  it { subject.process_manager.should_not be_nil }
-  it { subject.repeat.should eql false }
+  # Beware, error in testing observe method
+  # before { MediaPlayer::Player.any_instance.stub(:observe) }
+  subject {
+    MediaPlayer::Player.new(
+      process_manager: process_manager,
+      playlist: playlist
+    )
+  }
 
-  context 'when initialized without any media' do
-    it { subject.playlist.media.should be_empty }
-    it { subject.current_media.should be_nil }
-    it { subject.next_media.should be_nil }
+  it { expect(subject.is_playing).to eql false }
+  it { expect(subject.paused).to eql false }
+
+  # Delegated methods
+  it 'responds to delegated methods' do
+    expect(subject).to respond_to(:current_process_id)
+    expect(subject).to respond_to(:media)
+    expect(subject).to respond_to(:current_media)
+    expect(subject).to respond_to(:next_media)
+    expect(subject).to respond_to(:previous_media)
+    expect(subject).to respond_to(:shuffle)
   end
 
-  context 'when adding media' do
+  it { expect(subject.media).to eql [] }
+
+  describe '#add_media' do
     it 'pushes media to the playlist' do
-      subject.playlist.should_receive(:add).with(sample_media)
-      subject.add_media(sample_media)
+      expect(subject.playlist).to receive(:add).with sample_media
+      subject.add_media sample_media
     end
   end
 
   context 'when initialized with some media' do
-    let(:player) { MediaPlayer::Player.new(['a.mp3', 'b.wav']) }
-    it { player.playlist.should_not be_nil }
+    before { allow(subject.playlist).to receive(:current_media).and_return sample_media }
+    let(:media) { ['a.mp3', 'b.wav'] }
+    it { expect(subject.playlist).not_to eql nil }
 
-    it '#current_media' do
-      player.playlist.should_receive(:current_media).with(no_args())
-      player.current_media
-    end
-
-    it '#next_media' do
-      player.playlist.should_receive(:next_media).with(no_args())
-      player.next_media
-    end
-
-    it '#previous_media' do
-      player.playlist.should_receive(:previous_media).with(no_args())
-      player.previous_media
-    end
-
-    it '#shuffle' do
-      player.playlist.should_receive(:shuffle).with(no_args())
-      player.shuffle
-    end
-
-    context 'when setting repeat' do
-      it {
-        player.repeat = true
-        player.repeat.should eql true
-      }
-      it {
-        player.repeat = false
-        player.repeat.should eql false
-      }
-    end
-
-    context 'when manipulating media' do
-      context 'when manipulating current media' do
-        before { player.playlist.stub(:current_media).and_return(sample_media) }
-        context 'when playing media' do
-          context 'when player is not active' do
-            it 'plays the media in the playlist' do
-              player.process_manager.should_receive(:execute).with(sample_media)
-              return_value = player.play
-              expect(return_value.include? sample_media).to be_true
-              player.is_active.should eql true
-            end
-          end
-
-          context 'when player is active' do
-            before { player.instance_variable_set('@is_active', true) }
-            it 'resumes the paused media' do
-              player.process_manager.should_receive(:resume).with(no_args())
-              return_value = player.play
-              expect(return_value.include? sample_media).to be_true
-            end
-          end
+    describe '#play' do
+      context 'when player is not playing any media' do
+        it 'plays the media in the playlist' do
+          expect(subject.process_manager).to receive(:execute).with sample_media
+          expect(subject).to receive(:observe).with no_args
+          subject.play
         end
 
-        context 'when stopping media' do
-          it 'stops the current media' do
-            player.process_manager.should_receive(:stop).with(no_args())
-            return_value = player.stop
-            expect(return_value.include? sample_media).to be_true
-            player.is_active.should eql false
+        context 'when player has paused some media' do
+          before { subject.instance_variable_set('@paused', true) }
+          it 'resumes the paused media' do
+            expect(subject.process_manager).to receive(:resume).with no_args
+            subject.play
           end
         end
-
-        context 'when pausing media' do
-          it 'pauses the currently playing media from the playlist' do
-            player.process_manager.should_receive(:pause).with(no_args())
-            return_value = player.pause
-            expect(return_value.include? sample_media).to be_true
-          end
-        end
-
       end
+    end
 
-      context 'when changing media' do
-        context '#next' do
-          it 'plays the next media from the playlist' do
-            player.playlist.stub(:next_media).and_return(sample_media)
-            player.process_manager.should_receive(:stop).with(no_args())
-            player.process_manager.should_receive(:execute).with(sample_media)
-            return_value = player.next
-            expect(return_value.include? sample_media).to be_true
-          end
-        end
+    describe '#stop' do
+      it 'stops the current media' do
+        expect(subject.process_manager).to receive(:stop).with no_args
+        subject.stop
+        expect(subject.is_playing).to eql false
+      end
+    end
 
-        context '#previous' do
-          it 'plays the previous media in the playlist' do
-            player.playlist.stub(:previous_media).and_return(sample_media)
-            player.process_manager.should_receive(:stop).with(no_args())
-            player.process_manager.should_receive(:execute).with(sample_media)
-            return_value = player.previous
-            expect(return_value.include? sample_media).to be_true
-          end
-        end
+    describe '#pause' do
+      it 'pauses the currently playing media from the playlist' do
+        expect(subject.process_manager).to receive(:pause).with no_args
+        subject.pause
+      end
+    end
+
+    describe '#next' do
+      it 'plays the next media from the playlist' do
+        expect(subject.playlist).to receive(:next_media).and_return sample_media
+        expect(subject.process_manager).to receive(:stop).with no_args
+        expect(subject.process_manager).to receive(:execute).with sample_media
+        subject.next
+      end
+    end
+
+    describe '#previous' do
+      it 'plays the previous media in the playlist' do
+        expect(subject.playlist).to receive(:previous_media).and_return sample_media
+        expect(subject.process_manager).to receive(:stop).with no_args
+        expect(subject.process_manager).to receive(:execute).with sample_media
+        subject.previous
       end
     end
   end
-
 end
+

@@ -1,19 +1,18 @@
 require_relative './media_player/version'
-require_relative './playlist'
-require_relative './process_manager'
 require 'forwardable'
 
 module MediaPlayer
   class Player
     extend Forwardable
-    attr_reader :process_manager, :playlist, :is_active
-    attr_accessor :repeat
-    def_delegators :@playlist, :current_media, :next_media, :previous_media, :shuffle
+    attr_reader :process_manager, :playlist, :is_playing, :paused
+    def_delegator :@process_manager, :current_process_id
+    def_delegators :@playlist, :media, :current_media, :next_media, :previous_media, :shuffle
 
-    def initialize(media = [])
-      @process_manager = MediaPlayer::ProcessManager.new
-      @repeat = false
-      @playlist = MediaPlayer::PlayList.new(media)
+    def initialize(args = {})
+      @process_manager = args.fetch(:process_manager)
+      @playlist = args.fetch(:playlist)
+      @is_playing = false
+      @paused = false
     end
 
     def add_media(media_file)
@@ -21,33 +20,47 @@ module MediaPlayer
     end
 
     def play
-      if @is_active
-        [current_media, @process_manager.resume]
+      return if @is_playing
+      if @paused
+        @paused = false
+        @process_manager.resume
       else
-        @is_active = true
-        [current_media, @process_manager.execute(current_media)]
+        @is_playing = true
+        @process_manager.execute(current_media)
       end
+      observe
     end
 
     def stop
-      @is_active = false
-      [current_media, @process_manager.stop]
+      @is_playing = false
+      @process_manager.stop
     end
 
     def pause
-      [current_media, @process_manager.pause]
+      @is_playing = false
+      @paused = true
+      @process_manager.pause
     end
 
     def next
       @process_manager.stop
-      media = next_media
-      [media, @process_manager.execute(media)]
+      @process_manager.execute(next_media)
     end
 
     def previous
       @process_manager.stop
-      media = previous_media
-      [media, @process_manager.execute(media)]
+      @process_manager.execute(previous_media)
     end
+
+    def observe
+      Thread.new do
+        while @is_playing
+          self.next unless @process_manager.is_current_process_alive?
+          sleep 2
+        end
+      end
+    end
+
   end
 end
+
