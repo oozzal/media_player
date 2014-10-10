@@ -1,8 +1,10 @@
-# MediaPlayer
+# MediaPlayer (Beta)
 
-TODO: Write a gem description
+All in one command Line Media Player.
 
 ## Installation
+
+Dependencies: `jruby`, [sox]( http://sox.sourceforge.net/ )`
 
 Add this line to your application's Gemfile:
 
@@ -17,10 +19,19 @@ Or install it yourself as:
     $ gem install media_player
 
 ## Usage
+  * Make sure you're using `jruby`.
+  * Start the player: `player`
+  * Add media: `add <filename>`
+  * Play media: `play`
+  * Currently supported instructions: `add shuffle play stop pause next prev exit`
 
-TODO: Write usage instructions here
+## TODO
+  * Tab complete instructions
+  * Add more function
 
 ## Contributing
+
+Feel free to contribute.
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
