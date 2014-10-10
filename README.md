@@ -1,6 +1,6 @@
-# MediaPlayer (Beta)
+# MediaPlayer (Beta) [![Build Status](https://travis-ci.org/oozzal/media_player.svg?branch=master)](https://travis-ci.org/oozzal/media_player) [![Code Climate](https://codeclimate.com/github/oozzal/media_player/badges/gpa.svg)](https://codeclimate.com/github/oozzal/media_player)
 
-All in one command Line Media Player.
+A simple command Line Media Player.
 
 ## Installation
 
@@ -38,3 +38,6 @@ Feel free to contribute.
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+=
+Copyright &copy; [Uzzal Devkota](mailto:theoozzal@gmail.com)
