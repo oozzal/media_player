@@ -4,7 +4,7 @@ All in one command Line Media Player.
 
 ## Installation
 
-Dependencies: `jruby`, [sox]( http://sox.sourceforge.net/ )`
+Dependencies: `jruby`, [sox]( http://sox.sourceforge.net/ )
 
 Add this line to your application's Gemfile:
 
